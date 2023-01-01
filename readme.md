@@ -3,5 +3,5 @@
 ## To run project 
 
 ```bash
-stereamlit run main.py
+streamlit run main.py
 ```
