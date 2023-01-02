@@ -5,13 +5,11 @@ from sklearn.preprocessing import OneHotEncoder, LabelEncoder, MinMaxScaler, Sta
 
 class Preprocess():
 
-    def __init__(self, data,encoder,scaler,importance_threshold,corr_threshold):
+    def __init__(self, data,encoder,scaler):
         self.encoder = encoder
         self.scaler = scaler
         self.data = data
-        self.importence_threshold = importance_threshold
-        self.corr_threshold = corr_threshold
-    
+
     
     def max_values(self,data):
         max_values = []
@@ -72,15 +70,15 @@ class Preprocess():
 
             data = pd.concat([data, target], axis=1)
 
-            return data
+            return data,target
         except Exception as e:
             print(e)
 
-    def remove_correlated(self,data):
+    def remove_correlated(self,data,corr_threshold):
         correlation = data.corr()
         for i in range(len(correlation.columns)):
             for j in range(i):
-                if abs(correlation.iloc[i, j]) > self.corr_threshold:
+                if abs(correlation.iloc[i, j]) > corr_threshold:
                     colname = correlation.columns[i]
                     data.drop(colname, axis=1, inplace=True)
 
@@ -98,12 +96,12 @@ class Preprocess():
 
         return data
 
-    def most_important_features(self,data, target):
+    def most_important_features(self,data, target,threshold):
         from sklearn.ensemble import ExtraTreesClassifier
         model = ExtraTreesClassifier()
         model.fit(data, target)
-        for feature in zip(data.columns, model.feature_importances_):
-            if feature[1] > self.threshold:
+        for feature in zip(data.columns,model.feature_importances_):
+            if feature[1] > threshold:
                 data.drop(feature[0], axis=1, inplace=True)
                 
         return data
